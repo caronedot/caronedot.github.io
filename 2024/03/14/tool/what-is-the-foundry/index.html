@@ -14,7 +14,7 @@
 <meta property="og:description" content="Foundry 是由 Rust 語言所寫，為 Solidity 開發者構建的合約開發框架。 Auto CompletionFoundry 安裝完後會有 forge、cast 及 anvil 三個指令 anvil其實就和 hardhat node 一樣：跑起一個節點。 castcast 是用來取鏈上資料非常好用的工具。因為有很多功能，這裡我列出我常用及覺得實用的功能。 cast run：印出一筆已被">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-03-14T15:08:25.000Z">
-<meta property="article:modified_time" content="2024-03-15T05:14:41.411Z">
+<meta property="article:modified_time" content="2024-03-15T15:04:04.535Z">
 <meta property="article:author" content="caronedot">
 <meta property="article:tag" content="tool">
 <meta name="twitter:card" content="summary">
@@ -80,6 +80,8 @@
     <span id="actions">
       <ul>
         
+        <li><a class="icon" aria-label="Previous post" href="/2024/03/15/tool/what-is-the-make/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
         
         <li><a class="icon" aria-label="Next post" href="/2024/03/14/tool/how-to-use-vscode-better/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
@@ -111,7 +113,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-script"><span class="toc-number">6.</span> <span class="toc-text">forge script</span></a></li></ol>
       </div>
     
   </span>
@@ -172,7 +174,7 @@
 <p><strong>cast calldata</strong>：用 function signature 及參數組出 calldata。在為多簽檢查或組 calldata 的時候很方便</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Decode function selector of &quot;transfer(address,uint256)&quot;</span><br><span class="line">cast 4b 0xa9059cbb</span><br><span class="line">// Decode calldata of a transfer</span><br><span class="line">cast 4bd 0xa9059cbb000000000000000000000000f8ed47951b8eb0997d9f038fb1fcea46b171ea2f0000000000000000000000000000000000000000000000000000000078ca2e7e</span><br><span class="line">// Decode event signature of &quot;Transfer(address,address,uint256)&quot;</span><br><span class="line">cast 4be 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef</span><br><span class="line">// Encode calldata for a transfer</span><br><span class="line">cast calldata &quot;transfer(address,uint256)&quot; 0xf8ed47951B8eB0997D9F038FB1FCea46B171Ea2f 2026516094</span><br></pre></td></tr></table></figure>
 
-<p><strong>cast —-from-utf8&#x2F;–to-ascii</strong>：在 hex 或字串之間轉換<br><strong>cast sig</strong>：計算 function selector<br><strong>cast keccak</strong>：計算 keccak hash<br><strong>cast compute-address</strong>：計算 CREATE（不是 CREATE2）的地址</p>
+<p><strong>cast —-from-utf8&#x2F;–to-ascii</strong>：在 hex 或字串之間轉換<br><strong>cast sig</strong>：計算 function selector<br><strong>cast keccak</strong>：計算 keccak hash<br><strong>cast compute-address</strong>：計算 CREATE（不是 CREATE2）的地址<br><strong>cast wallet import <name> –interactive</strong> 导入私钥生成钱包<br><strong>cast wallet address –interactive</strong> 获取私钥生成的地址</p>
 <h3 id="forge-inspect"><a href="#forge-inspect" class="headerlink" title="forge inspect"></a>forge inspect</h3><p>forge 的 inspect 指令則是用來挖出一個合約更進階的資訊。</p>
 <p><strong>forge inspect MyContract abi&#x2F;bytecode&#x2F;deployedBytecode</strong>：列出 MyContract的 ABI&#x2F;編譯完的 bytecode&#x2F;實際部署到鏈上後的 bytecode，方便 export ABI 或是比對部署在鏈上的 bytecode</p>
 <p><strong>forge inspect MyContract methods&#x2F;gas</strong>：列出 MyContract的（public 的） function 列表（包含 function signature 及 selector）&#x2F; 每個 function 的預估 gas 消耗 。用 cast 4b&#x2F;4bd 其實就能反查特定 function selector，這個功能比較像是能看到一個合約完整的 function 資訊</p>
@@ -182,11 +184,14 @@
 <h3 id="forge-test"><a href="#forge-test" class="headerlink" title="forge test"></a>forge test</h3><p><strong>forge test -vvvv</strong> 进行测试合约的部署，并把日志等级设置为v4，如果 forge test 显示以下错误 </p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[FAIL. Reason: Invalid data Counterexample: calldata=0x5c7f60d70000000000000000000000000000000000000000000000000000000000000000, args=[0]] testFuzz_SetNumber(uint256) (runs: 0, μ: 0, ~: 0)</span><br><span class="line">Traces:</span><br><span class="line">  [11347] CounterTest::testFuzz_SetNumber(0)</span><br><span class="line">    ├─ [2390] Counter::setNumber(0)</span><br><span class="line">    │   └─ ← ()</span><br><span class="line">    ├─ [283] Counter::number() [staticcall]</span><br><span class="line">    │   └─ ← 0</span><br><span class="line">    ├─ [0] VM::assertEq(0, 0) [staticcall]</span><br><span class="line">    │   └─ ← &quot;Invalid data&quot;</span><br><span class="line">    └─ ← &quot;Invalid data&quot;</span><br></pre></td></tr></table></figure>
 
-<p>将 Test 替换为 DSTest 可以解决问题, 先进行安装</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forge install dapphub/ds-test</span><br></pre></td></tr></table></figure>
+<p>修改依赖源，用 npm 来管理</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install forge-sd </span><br><span class="line">npm install dapphub/ds-test</span><br></pre></td></tr></table></figure>
 
 <p>并添加文件 <code>remappings.txt</code></p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ds-test/=lib/ds-test/src/</span><br></pre></td></tr></table></figure>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">forge-std/=node_modules/forge-std/</span><br><span class="line">ds-test/=node_modules/ds-test</span><br></pre></td></tr></table></figure>
+
+<h3 id="forge-script"><a href="#forge-script" class="headerlink" title="forge script"></a>forge script</h3><p><strong>forge script &lt;sol文件&gt; –rpc-url <rpc> –account &lt;账户名&gt; -vvvv –broadcast –sender &lt;地址&gt;</strong> ：利用账户部署合约</p>
+
   </div>
 </article>
 
@@ -211,7 +216,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-script"><span class="toc-number">6.</span> <span class="toc-text">forge script</span></a></li></ol>
       </div>
     
 
