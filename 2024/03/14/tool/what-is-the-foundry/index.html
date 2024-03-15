@@ -14,7 +14,7 @@
 <meta property="og:description" content="Foundry 是由 Rust 語言所寫，為 Solidity 開發者構建的合約開發框架。 Auto CompletionFoundry 安裝完後會有 forge、cast 及 anvil 三個指令 anvil其實就和 hardhat node 一樣：跑起一個節點。 castcast 是用來取鏈上資料非常好用的工具。因為有很多功能，這裡我列出我常用及覺得實用的功能。 cast run：印出一筆已被">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-03-14T15:08:25.000Z">
-<meta property="article:modified_time" content="2024-03-14T15:08:25.225Z">
+<meta property="article:modified_time" content="2024-03-15T05:14:41.411Z">
 <meta property="article:author" content="caronedot">
 <meta property="article:tag" content="tool">
 <meta name="twitter:card" content="summary">
@@ -111,7 +111,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li></ol>
       </div>
     
   </span>
@@ -179,7 +179,14 @@
 <p><strong>forge inspect MyContract storage</strong>：列出 MyContract的 storage，包含每個變數的 storage slot 和 offset（如果有多個變數被 pack 在一起的話，offset 會是每個變數在該 slot 的起始位置）。但呈現的資料比較醜一點，可以改用 slither 來分析合約 storage 或讀取合約變數的值，它還可以拉鏈上的合約來分析，不需要先下載合約下來。</p>
 <p>接下來是比較進階的使用：irOptimized（或 iro），主要是你想再優化你合約的 gas 消耗時可以採用的方式。</p>
 <p><strong>forge inspect MyContract irOptimized</strong><br>它會呈現你的合約編譯成（優化過的）Yul 後的長相。Yul 就像 assembly，它介於 Solidity 和 EVM opcode 之間，它可以讓你看到你寫的 Solidity function 背後實際上還做了哪些事情，如此你就可以開始刪去一些不需要的檢查。</p>
+<h3 id="forge-test"><a href="#forge-test" class="headerlink" title="forge test"></a>forge test</h3><p><strong>forge test -vvvv</strong> 进行测试合约的部署，并把日志等级设置为v4，如果 forge test 显示以下错误 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[FAIL. Reason: Invalid data Counterexample: calldata=0x5c7f60d70000000000000000000000000000000000000000000000000000000000000000, args=[0]] testFuzz_SetNumber(uint256) (runs: 0, μ: 0, ~: 0)</span><br><span class="line">Traces:</span><br><span class="line">  [11347] CounterTest::testFuzz_SetNumber(0)</span><br><span class="line">    ├─ [2390] Counter::setNumber(0)</span><br><span class="line">    │   └─ ← ()</span><br><span class="line">    ├─ [283] Counter::number() [staticcall]</span><br><span class="line">    │   └─ ← 0</span><br><span class="line">    ├─ [0] VM::assertEq(0, 0) [staticcall]</span><br><span class="line">    │   └─ ← &quot;Invalid data&quot;</span><br><span class="line">    └─ ← &quot;Invalid data&quot;</span><br></pre></td></tr></table></figure>
 
+<p>将 Test 替换为 DSTest 可以解决问题, 先进行安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forge install dapphub/ds-test</span><br></pre></td></tr></table></figure>
+
+<p>并添加文件 <code>remappings.txt</code></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ds-test/=lib/ds-test/src/</span><br></pre></td></tr></table></figure>
   </div>
 </article>
 
@@ -204,7 +211,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li></ol>
       </div>
     
 
