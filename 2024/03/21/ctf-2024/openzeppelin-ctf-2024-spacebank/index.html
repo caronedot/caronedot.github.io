@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="本文章为 openzeppelin-ctf-2024 系列，记录 spacebank 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 spacebank 漏洞分析flashLoan 存在数值截断fee 计算使用的是除法，会发生截断问题，">
+    <meta name="description" content="本文章为 openzeppelin-ctf-2024 系列，记录 spacebank 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 spacebank 漏洞分析flashLoan 存在数值截断 fee 计算使用的是除法，会发生截断问题">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openzeppelin-ctf-2024-spacebank">
 <meta property="og:url" content="https://caronedot.github.io/2024/03/21/ctf-2024/openzeppelin-ctf-2024-spacebank/index.html">
 <meta property="og:site_name" content="little pamphlet">
-<meta property="og:description" content="本文章为 openzeppelin-ctf-2024 系列，记录 spacebank 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 spacebank 漏洞分析flashLoan 存在数值截断fee 计算使用的是除法，会发生截断问题，">
+<meta property="og:description" content="本文章为 openzeppelin-ctf-2024 系列，记录 spacebank 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 spacebank 漏洞分析flashLoan 存在数值截断 fee 计算使用的是除法，会发生截断问题">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-03-21T09:53:35.000Z">
-<meta property="article:modified_time" content="2024-03-21T10:09:29.441Z">
+<meta property="article:modified_time" content="2024-03-21T10:18:55.942Z">
 <meta property="article:author" content="caronedot">
 <meta name="twitter:card" content="summary">
     
@@ -110,7 +110,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#flashLoan-%E5%AD%98%E5%9C%A8%E6%95%B0%E5%80%BC%E6%88%AA%E6%96%AD"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">flashLoan 存在数值截断</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">6.</span> <span class="toc-text">参考文献</span></a></li></ol>
       </div>
     
   </span>
@@ -163,7 +163,8 @@
 <li>vscode</li>
 </ul>
 <h1 id="本地搭建-challenge"><a href="#本地搭建-challenge" class="headerlink" title="本地搭建 challenge"></a>本地搭建 challenge</h1><p>从 github 拉取 <a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024">ctf-2024</a> 项目，按照 <strong>README</strong> 文件使用 docker 启动 <em>spacebank</em></p>
-<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><h4 id="flashLoan-存在数值截断"><a href="#flashLoan-存在数值截断" class="headerlink" title="flashLoan 存在数值截断"></a><strong>flashLoan 存在数值截断</strong></h4><p>fee 计算使用的是除法，会发生截断问题，只要 amount &lt; 1000 就不需要手续费<br>currentBalance 计算是使用 token 的 balanceOf 方法，可以使用 <em>deposit</em> 进行转账后进行条件绕过</p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><p><strong>flashLoan 存在数值截断</strong></p>
+<p>fee 计算使用的是除法，会发生截断问题，只要 amount &lt; 1000 就不需要手续费<br>currentBalance 计算是使用 token 的 balanceOf 方法，可以使用 <em>deposit</em> 进行转账后进行条件绕过</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">flashLoan</span>(<span class="params">uint256 amount, address flashLoanReceiver</span>) external &#123;</span><br><span class="line">    <span class="comment">/** */</span></span><br><span class="line">-&gt;    uint256 fee = amount / <span class="number">1000</span>; <span class="comment">// 0.1% fee</span></span><br><span class="line">-&gt;    uint256 currentBalance = token.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">    <span class="comment">/** */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><ol>
@@ -187,6 +188,9 @@
 
 <p>以下为执行命令</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">make solve</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">由于 docker 生成的 anvil 是 6s 一个区块，所以等 6s 后进行调用</span></span><br><span class="line">make explode</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或者等 6s 采用下面的命令，使用 cast 发送交易</span></span><br><span class="line">make c-s</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>1.<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024/blob/main/spacebank/README.md">openzeppelin 官方题解</a><br>2.<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Uvd2jlHnoxAaEcJyCy64TQ">ZAN Team writeup</a></p>
+
   </div>
 </article>
 
@@ -211,7 +215,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#flashLoan-%E5%AD%98%E5%9C%A8%E6%95%B0%E5%80%BC%E6%88%AA%E6%96%AD"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">flashLoan 存在数值截断</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">6.</span> <span class="toc-text">参考文献</span></a></li></ol>
       </div>
     
 
