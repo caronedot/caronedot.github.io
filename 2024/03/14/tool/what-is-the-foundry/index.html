@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Foundry 是由 Rust 語言所寫，為 Solidity 開發者構建的合約開發框架。 Auto CompletionFoundry 安裝完後會有 forge、cast 及 anvil 三個指令 anvil其實就和 hardhat node 一樣：跑起一個節點。 1234567# 每 10 秒产生一个新的区块anvil --block-time 10# 启用永不挖矿模式anvil --no-m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="what-is-the-foundry">
+<meta property="og:url" content="https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/index.html">
+<meta property="og:site_name" content="little pamphlet">
+<meta property="og:description" content="Foundry 是由 Rust 語言所寫，為 Solidity 開發者構建的合約開發框架。 Auto CompletionFoundry 安裝完後會有 forge、cast 及 anvil 三個指令 anvil其實就和 hardhat node 一樣：跑起一個節點。 1234567# 每 10 秒产生一个新的区块anvil --block-time 10# 启用永不挖矿模式anvil --no-m">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-03-14T15:08:25.000Z">
+<meta property="article:modified_time" content="2024-08-12T05:20:32.198Z">
+<meta property="article:author" content="caronedot">
+<meta property="article:tag" content="tool">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>what-is-the-foundry</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/03/15/tool/what-is-the-make/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/03/14/tool/how-to-use-vscode-better/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&text=what-is-the-foundry"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&is_video=false&description=what-is-the-foundry"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=what-is-the-foundry&body=Check out this article: https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&name=what-is-the-foundry&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&t=what-is-the-foundry"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-script"><span class="toc-number">6.</span> <span class="toc-text">forge script</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM"><span class="toc-number">7.</span> <span class="toc-text">VM</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        what-is-the-foundry
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">caronedot</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-03-14T15:08:25.000Z" class="dt-published" itemprop="datePublished">2024-03-14</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/tool/" rel="tag">tool</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>Foundry 是由 Rust 語言所寫，為 Solidity 開發者構建的合約開發框架。</p>
+<h3 id="Auto-Completion"><a href="#Auto-Completion" class="headerlink" title="Auto Completion"></a>Auto Completion</h3><p>Foundry 安裝完後會有 forge、cast 及 anvil 三個指令</p>
+<h3 id="anvil"><a href="#anvil" class="headerlink" title="anvil"></a>anvil</h3><p>其實就和 hardhat node 一樣：跑起一個節點。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">每 10 秒产生一个新的区块</span></span><br><span class="line">anvil --block-time 10</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启用永不挖矿模式</span></span><br><span class="line">anvil --no-mining</span><br><span class="line"></span><br><span class="line">anvil --port &lt;PORT&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="cast"><a href="#cast" class="headerlink" title="cast"></a>cast</h3><p>cast 是用來取鏈上資料非常好用的工具。因為有很多功能，這裡我列出我常用及覺得實用的功能。</p>
+<p><strong>call send</strong>：原生交易</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cast.exe send [OPTIONS] [TO] [SIG] [ARGS]... [COMMAND]</span><br><span class="line"></span><br><span class="line">Arguments:</span><br><span class="line">  [TO]       The destination of the transaction</span><br><span class="line">  [SIG]      The signature of the function to call</span><br><span class="line">  [ARGS]...  The arguments of the function to call</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>cast call</strong>：在不发布交易的情况下对账户进行调用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cast.exe call [OPTIONS] [TO] [SIG] [ARGS]... [COMMAND]</span><br><span class="line"></span><br><span class="line">Arguments:</span><br><span class="line">  [TO]</span><br><span class="line">          The destination of the transaction</span><br><span class="line">  [SIG]</span><br><span class="line">          The signature of the function to call</span><br><span class="line">  [ARGS]...</span><br><span class="line">          The arguments of the function to call</span><br></pre></td></tr></table></figure>
+
+<p><strong>cast run</strong>：印出一筆已被收入的交易的 execution trace 或進行 live debug（加上 –debug option），為了得到準確的交易前狀態，預設會模擬執行同一區塊裡在該筆交易前面所有的交易，但這可能很耗時，如果只想看交易執行過程且不需要最精準的執行結果的話，可以加上 –quick option，它會跳過前面交易的模擬，直接把該筆交易當作區塊的第一筆交易來執行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cast run \</span><br><span class="line">  --label 0xc564ee9f21ed8a2d8e7e76c085740d5e4c5fafbe:sender \</span><br><span class="line">  --label 0x40950267d12e979ad42974be5ac9a7e452f9505e:recipient \</span><br><span class="line">  --label 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2:weth \</span><br><span class="line">  0xd15e0237413d7b824b784e1bbc3926e52f4726e5e5af30418803b8b327b4f8ca</span><br></pre></td></tr></table></figure>
+
+<p><strong>cast 4b&#x2F;4bd&#x2F;4be</strong>：反查 function selector、calldata 或是 event signature。在手上只有一筆交易或一個 event 的 raw data 時，可以透過這些工具來嘗試找出它要執行什麼函式或 emit 了什麼 event</p>
+<p><strong>cast calldata</strong>：用 function signature 及參數組出 calldata。在為多簽檢查或組 calldata 的時候很方便</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Decode function selector of &quot;transfer(address,uint256)&quot;</span><br><span class="line">cast 4b 0xa9059cbb</span><br><span class="line">// Decode calldata of a transfer</span><br><span class="line">cast 4bd 0xa9059cbb000000000000000000000000f8ed47951b8eb0997d9f038fb1fcea46b171ea2f0000000000000000000000000000000000000000000000000000000078ca2e7e</span><br><span class="line">// Decode event signature of &quot;Transfer(address,address,uint256)&quot;</span><br><span class="line">cast 4be 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef</span><br><span class="line">// Encode calldata for a transfer</span><br><span class="line">cast calldata &quot;transfer(address,uint256)&quot; 0xf8ed47951B8eB0997D9F038FB1FCea46B171Ea2f 2026516094</span><br></pre></td></tr></table></figure>
+
+<p><strong>cast —-from-utf8&#x2F;–to-ascii</strong>：在 hex 或字串之間轉換<br><strong>cast sig</strong>：計算 function selector<br><strong>cast keccak</strong>：計算 keccak hash<br><strong>cast compute-address</strong>：計算 CREATE（不是 CREATE2）的地址<br><strong>cast wallet import <name> –interactive</strong> 导入私钥生成钱包<br><strong>cast wallet address –interactive</strong> 获取私钥生成的地址</p>
+<p><strong>cast storage</strong> 获取特定 slot 位置的值</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Usage: cast.exe storage [OPTIONS] &lt;ADDRESS&gt; [SLOT]</span><br><span class="line">Arguments:</span><br><span class="line">  &lt;ADDRESS&gt;</span><br><span class="line">          The contract address</span><br><span class="line">  [SLOT]</span><br><span class="line">          The storage slot number</span><br><span class="line">bytes32 zero_data = vm.load(address(contract), bytes32(uint256(0)));</span><br></pre></td></tr></table></figure>
+
+<h3 id="forge-inspect"><a href="#forge-inspect" class="headerlink" title="forge inspect"></a>forge inspect</h3><p>forge 的 inspect 指令則是用來挖出一個合約更進階的資訊。</p>
+<p><strong>forge inspect MyContract abi&#x2F;bytecode&#x2F;deployedBytecode</strong>：列出 MyContract的 ABI&#x2F;編譯完的 bytecode&#x2F;實際部署到鏈上後的 bytecode，方便 export ABI 或是比對部署在鏈上的 bytecode</p>
+<p><strong>forge inspect MyContract methods&#x2F;gas</strong>：列出 MyContract的（public 的） function 列表（包含 function signature 及 selector）&#x2F; 每個 function 的預估 gas 消耗 。用 cast 4b&#x2F;4bd 其實就能反查特定 function selector，這個功能比較像是能看到一個合約完整的 function 資訊</p>
+<p><strong>forge inspect MyContract storage</strong>：列出 MyContract的 storage，包含每個變數的 storage slot 和 offset（如果有多個變數被 pack 在一起的話，offset 會是每個變數在該 slot 的起始位置）。但呈現的資料比較醜一點，可以改用 slither 來分析合約 storage 或讀取合約變數的值，它還可以拉鏈上的合約來分析，不需要先下載合約下來。</p>
+<p>接下來是比較進階的使用：irOptimized（或 iro），主要是你想再優化你合約的 gas 消耗時可以採用的方式。</p>
+<p><strong>forge inspect MyContract irOptimized</strong><br>它會呈現你的合約編譯成（優化過的）Yul 後的長相。Yul 就像 assembly，它介於 Solidity 和 EVM opcode 之間，它可以讓你看到你寫的 Solidity function 背後實際上還做了哪些事情，如此你就可以開始刪去一些不需要的檢查。</p>
+<h3 id="forge-test"><a href="#forge-test" class="headerlink" title="forge test"></a>forge test</h3><p><strong>forge test -vvvv</strong> 进行测试合约的部署，并把日志等级设置为v4，如果 forge test 显示以下错误 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[FAIL. Reason: Invalid data Counterexample: calldata=0x5c7f60d70000000000000000000000000000000000000000000000000000000000000000, args=[0]] testFuzz_SetNumber(uint256) (runs: 0, μ: 0, ~: 0)</span><br><span class="line">Traces:</span><br><span class="line">  [11347] CounterTest::testFuzz_SetNumber(0)</span><br><span class="line">    ├─ [2390] Counter::setNumber(0)</span><br><span class="line">    │   └─ ← ()</span><br><span class="line">    ├─ [283] Counter::number() [staticcall]</span><br><span class="line">    │   └─ ← 0</span><br><span class="line">    ├─ [0] VM::assertEq(0, 0) [staticcall]</span><br><span class="line">    │   └─ ← &quot;Invalid data&quot;</span><br><span class="line">    └─ ← &quot;Invalid data&quot;</span><br></pre></td></tr></table></figure>
+
+<p>修改依赖源，用 npm 来管理</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install forge-sd </span><br><span class="line">npm install dapphub/ds-test</span><br></pre></td></tr></table></figure>
+
+<p>并添加文件 <code>remappings.txt</code></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">forge-std/=node_modules/forge-std/</span><br><span class="line">ds-test/=node_modules/ds-test</span><br></pre></td></tr></table></figure>
+
+<h3 id="forge-script"><a href="#forge-script" class="headerlink" title="forge script"></a>forge script</h3><p>使用脚本进行合约部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">forge.exe script [OPTIONS] &lt;PATH&gt; [ARGS]...</span><br><span class="line">Options:</span><br><span class="line">      --broadcast</span><br><span class="line">          Broadcasts the transactions</span><br><span class="line">Wallet options - raw:</span><br><span class="line">-i, --interactives &lt;NUM&gt;</span><br><span class="line">          Open an interactive prompt to enter your private key.</span><br><span class="line">          Takes a value for the number of keys to enter.</span><br><span class="line">          [default: 0]</span><br><span class="line">      --private-keys &lt;RAW_PRIVATE_KEYS&gt;</span><br><span class="line">          Use the provided private keys</span><br><span class="line">      --private-key &lt;RAW_PRIVATE_KEY&gt;</span><br><span class="line">          Use the provided private key</span><br><span class="line">      --mnemonics &lt;MNEMONICS&gt;</span><br><span class="line">          Use the mnemonic phrases of mnemonic files at the specified paths</span><br></pre></td></tr></table></figure>
+
+<h3 id="VM"><a href="#VM" class="headerlink" title="VM"></a>VM</h3><p>此处记录常用的 vm 操作</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//从 .env 获取环境变量</span></span><br><span class="line">vm.<span class="title function_">envOr</span>(envName, defaultValue)</span><br><span class="line"><span class="comment">//从助记词获取私钥</span></span><br><span class="line">vm.<span class="title function_">deriveKey</span>(mnemonic, index)</span><br><span class="line"><span class="comment">//记录到本地的 wallet 并返回私钥对应的地址</span></span><br><span class="line">vm.<span class="title function_">rememberKey</span>(uint256 privateKey)</span><br><span class="line"><span class="comment">//从私钥获取地址</span></span><br><span class="line">vm.<span class="title function_">addr</span>(playerPrivateKey)</span><br><span class="line"><span class="comment">//覆盖形式写入</span></span><br><span class="line">vm.<span class="title function_">writeFile</span>(path, data);</span><br><span class="line"><span class="comment">//追加形式写入</span></span><br><span class="line">vm.<span class="title function_">writeLine</span>(path, data);</span><br><span class="line"><span class="comment">//以 system 名义继续广播</span></span><br><span class="line">vm.<span class="title function_">startBroadcast</span>(system);</span><br><span class="line">vm.<span class="title function_">stopBroadcast</span>();</span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/categories/">Categores</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Auto-Completion"><span class="toc-number">1.</span> <span class="toc-text">Auto Completion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anvil"><span class="toc-number">2.</span> <span class="toc-text">anvil</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cast"><span class="toc-number">3.</span> <span class="toc-text">cast</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-inspect"><span class="toc-number">4.</span> <span class="toc-text">forge inspect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-test"><span class="toc-number">5.</span> <span class="toc-text">forge test</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forge-script"><span class="toc-number">6.</span> <span class="toc-text">forge script</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VM"><span class="toc-number">7.</span> <span class="toc-text">VM</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&text=what-is-the-foundry"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&is_video=false&description=what-is-the-foundry"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=what-is-the-foundry&body=Check out this article: https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&title=what-is-the-foundry"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&name=what-is-the-foundry&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/03/14/tool/what-is-the-foundry/&t=what-is-the-foundry"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    caronedot
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
