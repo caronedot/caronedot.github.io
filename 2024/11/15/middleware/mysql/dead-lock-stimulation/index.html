@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文章主要介绍 mysql 9.0.0 的死锁触发以及排查手段 mysql 知识前提 mysql 中执行语句可以添加写锁和读锁 执行 update 语句的时候会添加排他锁 select 语句中的 lock in share mode（共享锁）和 for update（排他锁）：  死锁模拟123456-- 查看隔离级别SHOW VARIABLES LIKE &#x27;transaction_is">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dead-lock-stimulation">
+<meta property="og:url" content="https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/index.html">
+<meta property="og:site_name" content="little pamphlet">
+<meta property="og:description" content="本文章主要介绍 mysql 9.0.0 的死锁触发以及排查手段 mysql 知识前提 mysql 中执行语句可以添加写锁和读锁 执行 update 语句的时候会添加排他锁 select 语句中的 lock in share mode（共享锁）和 for update（排他锁）：  死锁模拟123456-- 查看隔离级别SHOW VARIABLES LIKE &#x27;transaction_is">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-11-15T08:52:21.000Z">
+<meta property="article:modified_time" content="2024-11-15T08:52:21.194Z">
+<meta property="article:author" content="caronedot">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>dead-lock-stimulation</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/04/23/ctf-2024/openzeppelin-ctf-2024-beef/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&text=dead-lock-stimulation"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&is_video=false&description=dead-lock-stimulation"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=dead-lock-stimulation&body=Check out this article: https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&name=dead-lock-stimulation&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&t=dead-lock-stimulation"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql-%E7%9F%A5%E8%AF%86%E5%89%8D%E6%8F%90"><span class="toc-number">1.</span> <span class="toc-text">mysql 知识前提</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E6%A8%A1%E6%8B%9F"><span class="toc-number">2.</span> <span class="toc-text">死锁模拟</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TRANSACTION"><span class="toc-number">2.1.</span> <span class="toc-text">TRANSACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TRANSACTION-1"><span class="toc-number">2.2.</span> <span class="toc-text">TRANSACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">2.3.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5-transaction-%E6%8C%81%E6%9C%89%E7%9A%84%E9%94%81"><span class="toc-number">3.</span> <span class="toc-text">排查 transaction 持有的锁</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SHOW-ENGINE-INNODB-STATUS"><span class="toc-number">3.1.</span> <span class="toc-text">SHOW ENGINE INNODB STATUS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SELECT-FROM-performance-schema-data-locks"><span class="toc-number">3.2.</span> <span class="toc-text">SELECT * FROM performance_schema.data_locks</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        dead-lock-stimulation
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">caronedot</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-11-15T08:52:21.000Z" class="dt-published" itemprop="datePublished">2024-11-15</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/mysql/">mysql</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>本文章主要介绍 mysql 9.0.0 的死锁触发以及排查手段</p>
+<h1 id="mysql-知识前提"><a href="#mysql-知识前提" class="headerlink" title="mysql 知识前提"></a>mysql 知识前提</h1><ol>
+<li>mysql 中执行语句可以添加写锁和读锁</li>
+<li>执行 update 语句的时候会添加排他锁</li>
+<li>select 语句中的 lock in share mode（共享锁）和 for update（排他锁）：</li>
+</ol>
+<h1 id="死锁模拟"><a href="#死锁模拟" class="headerlink" title="死锁模拟"></a>死锁模拟</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看隔离级别</span></span><br><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> <span class="string">&#x27;transaction_isolation&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 开启锁监控</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">GLOBAL</span> innodb_status_output<span class="operator">=</span><span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">GLOBAL</span> innodb_status_output_locks<span class="operator">=</span><span class="keyword">ON</span>;</span><br></pre></td></tr></table></figure>
+
+<p>开两个 TRANSACTION 执行命令</p>
+<h2 id="TRANSACTION"><a href="#TRANSACTION" class="headerlink" title="TRANSACTION"></a>TRANSACTION</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="comment">-- 对 id = 1 记录增加 读锁</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span> LOCK <span class="keyword">IN</span> SHARE MODE;</span><br><span class="line"><span class="comment">-- 对 id = 2 记录增加 写锁</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">2</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="TRANSACTION-1"><a href="#TRANSACTION-1" class="headerlink" title="TRANSACTION"></a>TRANSACTION</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="comment">-- 对 id = 2 记录增加 读锁</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">2</span> LOCK <span class="keyword">IN</span> SHARE MODE;</span><br><span class="line"><span class="comment">-- 对 id = 1 记录增加 写锁</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>执行命令，其中一个 TRANSACTION 会检测到死锁自动断开</p>
+<p><code>ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction</code></p>
+<h1 id="排查-transaction-持有的锁"><a href="#排查-transaction-持有的锁" class="headerlink" title="排查 transaction 持有的锁"></a>排查 transaction 持有的锁</h1><h2 id="SHOW-ENGINE-INNODB-STATUS"><a href="#SHOW-ENGINE-INNODB-STATUS" class="headerlink" title="SHOW ENGINE INNODB STATUS"></a>SHOW ENGINE INNODB STATUS</h2><p>transaction 属性会显示以下信息</p>
+<ul>
+<li>事务 337227 持有 heap no 2（ id&#x3D;1 这一行）的排他锁。</li>
+<li>事务 337228 持有 heap no 3（ id&#x3D;2 这一行）的排他锁。</li>
+</ul>
+<p><strong>rec but not gap</strong>：持有记录锁而不是间隙锁</p>
+<p><strong>heap no x PHYSICAL RECORD</strong>：用户数据 x-1 行记录，no 1 主要用于索引结构，不是数据行</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">------------</span></span><br><span class="line">TRANSACTIONS</span><br><span class="line"><span class="comment">------------</span></span><br><span class="line"><span class="comment">---TRANSACTION 337228, ACTIVE 11 sec</span></span><br><span class="line"><span class="number">2</span> lock struct(s), heap size <span class="number">1128</span>, <span class="number">1</span> <span class="type">row</span> lock(s)</span><br><span class="line">MySQL thread id <span class="number">31</span>, OS thread handle <span class="number">281472767020800</span>, query id <span class="number">776</span> <span class="number">192.168</span><span class="number">.65</span><span class="number">.1</span> root</span><br><span class="line"><span class="keyword">TABLE</span> LOCK <span class="keyword">table</span> `java_sec_code`.`users` trx id <span class="number">337228</span> lock mode IX</span><br><span class="line">RECORD LOCKS space id <span class="number">3646</span> page <span class="keyword">no</span> <span class="number">4</span> n bits <span class="number">72</span> index <span class="keyword">PRIMARY</span> <span class="keyword">of</span> <span class="keyword">table</span> `java_sec_code`.`users` trx id <span class="number">337228</span> lock_mode X locks rec but <span class="keyword">not</span> gap</span><br><span class="line">Record lock, heap <span class="keyword">no</span> <span class="number">3</span> PHYSICAL RECORD: n_fields <span class="number">5</span>; compact format; info bits <span class="number">0</span></span><br><span class="line"> <span class="number">0</span>: len <span class="number">4</span>; hex <span class="number">00000002</span>; <span class="keyword">asc</span>     ;;</span><br><span class="line"> <span class="number">1</span>: len <span class="number">6</span>; hex <span class="number">00000005252</span>c; <span class="keyword">asc</span>     <span class="operator">%</span>,;;</span><br><span class="line"> <span class="number">2</span>: len <span class="number">7</span>; hex <span class="number">82000000860110</span>; <span class="keyword">asc</span>        ;;</span><br><span class="line"> <span class="number">3</span>: len <span class="number">1</span>; hex <span class="number">61</span>; <span class="keyword">asc</span> a;;</span><br><span class="line"> <span class="number">4</span>: len <span class="number">1</span>; hex <span class="number">61</span>; <span class="keyword">asc</span> a;;</span><br><span class="line"></span><br><span class="line"><span class="comment">---TRANSACTION 337227, ACTIVE 14 sec</span></span><br><span class="line"><span class="number">2</span> lock struct(s), heap size <span class="number">1128</span>, <span class="number">1</span> <span class="type">row</span> lock(s)</span><br><span class="line">MySQL thread id <span class="number">30</span>, OS thread handle <span class="number">281472765902592</span>, query id <span class="number">775</span> <span class="number">192.168</span><span class="number">.65</span><span class="number">.1</span> root</span><br><span class="line"><span class="keyword">TABLE</span> LOCK <span class="keyword">table</span> `java_sec_code`.`users` trx id <span class="number">337227</span> lock mode IX</span><br><span class="line">RECORD LOCKS space id <span class="number">3646</span> page <span class="keyword">no</span> <span class="number">4</span> n bits <span class="number">72</span> index <span class="keyword">PRIMARY</span> <span class="keyword">of</span> <span class="keyword">table</span> `java_sec_code`.`users` trx id <span class="number">337227</span> lock_mode X locks rec but <span class="keyword">not</span> gap</span><br><span class="line">Record lock, heap <span class="keyword">no</span> <span class="number">2</span> PHYSICAL RECORD: n_fields <span class="number">5</span>; compact format; info bits <span class="number">0</span></span><br><span class="line"> <span class="number">0</span>: len <span class="number">4</span>; hex <span class="number">00000001</span>; <span class="keyword">asc</span>     ;;</span><br><span class="line"> <span class="number">1</span>: len <span class="number">6</span>; hex <span class="number">00000001</span>ffe2; <span class="keyword">asc</span>       ;;</span><br><span class="line"> <span class="number">2</span>: len <span class="number">7</span>; hex <span class="number">820000012</span>b0110; <span class="keyword">asc</span>     <span class="operator">+</span>  ;;</span><br><span class="line"> <span class="number">3</span>: len <span class="number">5</span>; hex <span class="number">61646</span>d696e; <span class="keyword">asc</span> admin;;</span><br><span class="line"> <span class="number">4</span>: len <span class="number">8</span>; hex <span class="number">61646</span>d696e313233; <span class="keyword">asc</span> admin123;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SELECT-FROM-performance-schema-data-locks"><a href="#SELECT-FROM-performance-schema-data-locks" class="headerlink" title="SELECT * FROM performance_schema.data_locks"></a>SELECT * FROM performance_schema.data_locks</h2><p>查看锁被哪个事务持有并等待的命令</p>
+<p>IX（Intent Exclusive）：意向排他锁，表示事务有意图在表中的某些行上设置排他锁。这并不是一个具体的行锁，而是一个表级锁，主要用于确保其他事务在对整个表操作时，了解此事务可能正在对部分行进行排他操作。</p>
+<p>IS（Intent Shared）：意向共享锁，表示事务有意图在表中的某些行上设置共享锁。同样是表级锁，用来表明此事务可能在对一些行进行读操作，以便其他事务在操作表时能检测到这一点。</p>
+<p>X（Exclusive Lock）：排他锁，对行进行写操作（例如 UPDATE、DELETE）时使用，阻止其他事务读取或修改这行数据。</p>
+<p>S（Shared Lock）：共享锁，对行进行读操作时（如使用 LOCK IN SHARE MODE）使用，允许其他事务进行共享锁，但阻止其他事务获得排他锁。</p>
+<table>
+<thead>
+<tr>
+<th>ENGINE</th>
+<th>ENGINE_LOCK_ID</th>
+<th>ENGINE_TRANSACTION_ID</th>
+<th>THREAD_ID</th>
+<th>EVENT_ID</th>
+<th>OBJECT_SCHEMA</th>
+<th>OBJECT_NAME</th>
+<th>PARTITION_NAME</th>
+<th>SUBPARTITION_NAME</th>
+<th>INDEX_NAME</th>
+<th>OBJECT_INSTANCE_BEGIN</th>
+<th>LOCK_TYPE</th>
+<th>LOCK_MODE</th>
+<th>LOCK_STATUS</th>
+<th>LOCK_DATA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INNODB</td>
+<td>281473235488768:4712:281473164831848</td>
+<td>337229</td>
+<td>67</td>
+<td>42</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>281473164831848</td>
+<td>TABLE</td>
+<td>IX</td>
+<td>GRANTED</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235488768:4712:281473164831760</td>
+<td>337229</td>
+<td>67</td>
+<td>40</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>281473164831760</td>
+<td>TABLE</td>
+<td>IS</td>
+<td>GRANTED</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235488768:3646:4:2:281473164828848</td>
+<td>337229</td>
+<td>67</td>
+<td>40</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>PRIMARY</td>
+<td>281473164828848</td>
+<td>RECORD</td>
+<td>S,REC_NOT_GAP</td>
+<td>GRANTED</td>
+<td>1</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235488768:3646:4:3:281473164828848</td>
+<td>337229</td>
+<td>67</td>
+<td>40</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>PRIMARY</td>
+<td>281473164828848</td>
+<td>RECORD</td>
+<td>S,REC_NOT_GAP</td>
+<td>GRANTED</td>
+<td>2</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235488768:3646:4:3:281473164829192</td>
+<td>337229</td>
+<td>67</td>
+<td>42</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>PRIMARY</td>
+<td>281473164829192</td>
+<td>RECORD</td>
+<td>X,REC_NOT_GAP</td>
+<td>WAITING</td>
+<td>2</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235487960:4712:281473164825632</td>
+<td>562948212198616</td>
+<td>68</td>
+<td>34</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>281473164825632</td>
+<td>TABLE</td>
+<td>IS</td>
+<td>GRANTED</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>INNODB</td>
+<td>281473235487960:3646:4:3:281473164822640</td>
+<td>562948212198616</td>
+<td>68</td>
+<td>34</td>
+<td>java_sec_code</td>
+<td>users</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>PRIMARY</td>
+<td>281473164822640</td>
+<td>RECORD</td>
+<td>S,REC_NOT_GAP</td>
+<td>GRANTED</td>
+<td>2</td>
+</tr>
+</tbody></table>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/categories/">Categores</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql-%E7%9F%A5%E8%AF%86%E5%89%8D%E6%8F%90"><span class="toc-number">1.</span> <span class="toc-text">mysql 知识前提</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E6%A8%A1%E6%8B%9F"><span class="toc-number">2.</span> <span class="toc-text">死锁模拟</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TRANSACTION"><span class="toc-number">2.1.</span> <span class="toc-text">TRANSACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TRANSACTION-1"><span class="toc-number">2.2.</span> <span class="toc-text">TRANSACTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">2.3.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5-transaction-%E6%8C%81%E6%9C%89%E7%9A%84%E9%94%81"><span class="toc-number">3.</span> <span class="toc-text">排查 transaction 持有的锁</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SHOW-ENGINE-INNODB-STATUS"><span class="toc-number">3.1.</span> <span class="toc-text">SHOW ENGINE INNODB STATUS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SELECT-FROM-performance-schema-data-locks"><span class="toc-number">3.2.</span> <span class="toc-text">SELECT * FROM performance_schema.data_locks</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&text=dead-lock-stimulation"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&is_video=false&description=dead-lock-stimulation"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=dead-lock-stimulation&body=Check out this article: https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&title=dead-lock-stimulation"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&name=dead-lock-stimulation&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://caronedot.github.io/2024/11/15/middleware/mysql/dead-lock-stimulation/&t=dead-lock-stimulation"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    caronedot
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Categores</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
